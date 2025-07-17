@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Store Resource Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f7f7f7;
+      color: #000;
+      padding-top: 140px; /* increased from 130px for extra spacing */
+    }
+
+
+    /* Fixed top bar container */
+    .fixed-top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 1000;
+      padding: 15px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      user-select: none;
+      height: 140px; /* explicit height for consistency */
+      box-sizing: border-box;
+    }
+
+    .fixed-top-bar h1 {
+      font-size: 36px;
+      font-weight: 900;
+      margin: 0;
+      flex-basis: 100%;
+      text-align: center;
+    }
+
+    /* Controls container inside fixed bar */
+    .fixed-controls {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      max-width: 900px;
+      align-items: center;
+    }
+
+    .filter-container {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: nowrap;
+    }
+
+    label {
+      font-size: 18px;
+      font-weight: bold;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    select,
+    input[type="text"] {
+      padding: 10px 14px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 8px;
+      border: 2px solid #aaa;
+      background-color: #fff;
+      color: #000;
+      min-width: 200px;
+      touch-action: manipulation;
+    }
+
+    select:focus,
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #0077cc;
+      box-shadow: 0 0 5px rgba(0, 119, 204, 0.5);
+    }
+
+    /* Content below fixed top bar */
+    .content-below {
+      max-width: 960px;
+      margin: 0 auto 40px;
+      padding: 0 20px;
+    }
+
+    .top-bar-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 16px;
+      user-select: none;
+      margin-top: 10px; /* added margin to move buttons down a bit */
+    }
+
+    /* Left side with calendar and tracking */
+    .left-top-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 320px;
+      flex-grow: 1;
+      max-width: 700px;
+    }
+
+    /* Right side for skill assessment */
+    .right-top-bar {
+      display: flex;
+      align-items: center;
+      min-width: 220px;
+      justify-content: flex-end;
+    }
+
+    .calendar-link,
+    .export-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: bold;
+      text-decoration: none;
+      color: #0077cc;
+      background-color: #e6f0ff;
+      padding: 10px 16px;
+      border-radius: 12px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s, transform 0.2s;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+
+    .calendar-link:hover,
+    .export-link:hover {
+      background-color: #cce0ff;
+      transform: scale(1.05);
+    }
+
+    .tracking-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      width: 100%;
+      max-width: 480px;
+      flex-wrap: nowrap;
+    }
+
+    .tracking-bar input[type="text"] {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 2px solid #aaa;
+      min-width: 120px;
+    }
+
+    .tracking-bar select {
+      padding: 8px 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 2px solid #aaa;
+      background-color: #fff;
+      cursor: pointer;
+      user-select: none;
+      min-width: 100px;
+    }
+
+    .tracking-bar button {
+      padding: 8px 16px;
+      font-size: 16px;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      white-space: nowrap;
+      user-select: none;
+      min-width: 80px;
+    }
+
+    .tracking-bar button:hover {
+      background-color: #005fa3;
+    }
+
+    .skill-assessment-btn {
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      border: none;
+      border-radius: 12px;
+      padding: 12px 20px;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0, 242, 254, 0.5);
+      transition: box-shadow 0.3s, transform 0.2s;
+      user-select: none;
+      max-width: 220px;
+      text-align: center;
+    }
+
+    .skill-assessment-btn:hover {
+      box-shadow: 0 6px 18px rgba(0, 242, 254, 0.8);
+      transform: scale(1.05);
+    }
+
+    #linksContainer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .link-box {
+      flex: 1 1 calc(33% - 30px);
+      border-radius: 16px;
+      padding: 0;
+      box-sizing: border-box;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 900;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      min-width: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      width: 240px;
+      height: 80px;
+      touch-action: manipulation;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      background: linear-gradient(135deg, #ffffff, #f0f0f0);
+    }
+
+    .link-box a {
+      text-decoration: none;
+      color: inherit;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-weight: 900;
+      font-size: 20px;
+      border-radius: 16px;
+    }
+
+    .link-box:hover,
+    .link-box:focus-within {
+      transform: scale(1.05);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+    }
+
+    .tape { background: linear-gradient(to right, #ff7e5f, #feb47b); color: #fff; }
+    .drivers { background: linear-gradient(to right, #36d1dc, #5b86e5); color: #fff; }
+    .mailbox { background: linear-gradient(to right, #fddb92, #d1fdff); color: #333; }
+    .eod { background: linear-gradient(to right, #56ab2f, #a8e063); color: #fff; }
+    .clock { background: linear-gradient(to right, #a18cd1, #fbc2eb); color: #fff; }
+    .inventory { background: linear-gradient(to right, #43e97b, #38f9d7); color: #003333; }
+    .print { background: linear-gradient(to right, #ff9966, #ff5e62); color: #fff; }
+    .notary { background: linear-gradient(to right, #7f7fd5, #86a8e7, #91eae4); color: #fff; }
+    .point { background: linear-gradient(to right, #4facfe, #00f2fe); color: #003366; }
+
+    @media (max-width: 768px) {
+      .link-box {
+        flex: 1 1 calc(50% - 20px);
+        width: auto;
+        height: 70px;
+        font-size: 20px;
+      }
+
+      .link-box a {
+        font-size: 20px;
+      }
+
+      .top-bar-wrapper {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .left-top-bar {
+        justify-content: center;
+        min-width: 100%;
+        max-width: 100%;
+      }
+
+      .right-top-bar {
+        justify-content: center;
+        margin-top: 12px;
+        min-width: auto;
+      }
+
+      .tracking-bar {
+        max-width: 100%;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .fixed-controls {
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .link-box {
+        flex: 1 1 100%;
+        width: auto;
+        height: 65px;
+        font-size: 18px;
+      }
+
+      .link-box a {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="fixed-top-bar" role="banner" aria-label="Main controls">
+    <h1>Store Resource Dashboard</h1>
+
+    <div class="fixed-controls">
+      <div class="filter-container">
+        <label for="storeFilter">Select Store:</label>
+        <select id="storeFilter" aria-label="Select store" onchange="onStoreChange()">
+          <option disabled value="">-- Select Store --</option>
+          <option value="6291">Store 6291</option>
+          <option value="3145">Store 3145</option>
+          <option value="0476">Store 0476</option>
+        </select>
+      </div>
+
+      <div class="filter-container">
+        <label for="searchBar">Search:</label>
+        <input type="text" id="searchBar" aria-label="Search links" onkeyup="filterLinks()" placeholder="Search links..." />
+      </div>
+    </div>
+  </div>
+
+  <div class="content-below">
+    <div class="top-bar-wrapper" role="region" aria-label="Quick links and tracking">
+      <div class="left-top-bar">
+        <a class="calendar-link" href="https://calendar.google.com/calendar/u/0/r" target="_blank" rel="noopener noreferrer">📅 Team Calendar</a>
+
+        <div class="tracking-bar" aria-label="Package Tracking">
+          <input type="text" id="trackingNumber" placeholder="Enter Tracking Number" aria-label="Tracking Number" />
+          <select id="carrierSelect" aria-label="Select Carrier">
+            <option value="ups">UPS</option>
+            <option value="usps">USPS</option>
+          </select>
+          <button onclick="trackPackage()">Track</button>
+        </div>
+
+        <a class="export-link" href="https://www.ups.com/ga/CountryRegs" target="_blank" rel="noopener noreferrer">📦 UPS Export Regulations</a>
+      </div>
+
+      <div class="right-top-bar">
+        <a class="skill-assessment-btn" href="https://docs.google.com/spreadsheets/d/1wbJrGK9RB77MWDI1ge7tABlngv6rWsL1WaU0TppUbt4/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer" role="button" tabindex="0">
+          Team Skill Assessment
+        </a>
+      </div>
+    </div>
+
+    <div id="linksContainer" aria-live="polite" aria-relevant="additions"></div>
+  </div>
+
+  <script>
+    const storeLinks = {
+      '3145': [
+        { emoji: '📋', label: 'Daily Drivers Log', url: 'https://docs.google.com/spreadsheets/d/1NNuk9rclSsF9JJT8VLFS3Sq4aZvCaRa4GKe5fTknLNo/edit', class: 'drivers' },
+        { emoji: '📼', label: '3145 Tape Log', url: 'https://docs.google.com/spreadsheets/d/1XnG_z6nKWyV4rd8EmH4sV4Q0qkQQzekotGNozMn-OuY/edit', class: 'tape' },
+        { emoji: '🗄️', label: '3145 Drawer', url: 'https://docs.google.com/spreadsheets/d/1TqzigCaGF75c_eyeYmEQlBq7ki0OGiHfZmNObP-3RdU/edit', class: 'tape' },
+        { emoji: '📬', label: 'Mailbox Renewals', url: 'https://docs.google.com/spreadsheets/d/1M4xpbpibEjq_YRcN0IuumuT32EXIIce9m7R14FOR3to/edit', class: 'mailbox' },
+        { emoji: '⏰', label: 'Clock-In/Out Exception', url: 'https://docs.google.com/spreadsheets/d/1YesMTi-ZnNfcDQ6X4feNtf1LV1rFSaHW7AMnXFkLENc/edit', class: 'clock' },
+        { emoji: '🏬', label: 'Store Inventory', url: 'https://docs.google.com/spreadsheets/d/1VYiUSyP9Ma4lmZj1cRonB5CHQopwSJ2mCw9U4K5NU00/edit', class: 'inventory' },
+        { emoji: '🖨️', label: 'Large Format Print Calculator', url: 'https://docs.google.com/spreadsheets/d/1fwBJT1ZzEamI3CAucVwkbXKXqzOkIgOu/edit', class: 'print' }
+      ],
+      '0476': [
+        { emoji: '📼', label: '0476 XTape Log', url: 'https://docs.google.com/spreadsheets/d/1fBCCX95BK8IyyiOAVa2cCcPBzdYsq_Q_/edit', class: 'tape' },
+        { emoji: '📊', label: 'EOD 0476', url: 'https://docs.google.com/spreadsheets/d/14W_C5nzKr3HXeIKySoq9BYhTMU3-5gogw4qPQwbACLs/edit', class: 'eod' },
+        { emoji: '📬', label: 'Mailbox Renewals', url: 'https://docs.google.com/spreadsheets/d/1Hxm_SJ8pkeUemO5JY3_yl3T7zsT4M55x/edit', class: 'mailbox' },
+        { emoji: '🏬', label: 'Store Inventory', url: 'https://docs.google.com/spreadsheets/d/1VYiUSyP9Ma4lmZj1cRonB5CHQopwSJ2mCw9U4K5NU00/edit', class: 'inventory' },
+        { emoji: '🖨️', label: 'Large Format Print Calculator', url: 'https://docs.google.com/spreadsheets/d/1fwBJT1ZzEamI3CAucVwkbXKXqzOkIgOu/edit', class: 'print' },
+        { emoji: '📝', label: 'Notary Error Log', url: 'https://docs.google.com/spreadsheets/d/1X30MU6fOC10LBUYj5hOCgLis5-VcpJ3REGsnmX-6U6E/edit', class: 'notary' },
+        { emoji: '📦', label: 'Customer Shipping Log', url: 'https://docs.google.com/spreadsheets/d/1C-csyRgPEyExJvVHW3w4fQAEUg14VmHxPwsG_VNqViE/edit', class: 'print' },
+        { emoji: '📦', label: 'Amazon Container Log', url: 'https://docs.google.com/spreadsheets/d/1yYfZ9Fh8q32SdqTfHiSvZOmq4PI9ul9mJt73XQCpxCQ/edit', class: 'point' }
+      ],
+      '6291': [
+        { emoji: '📊', label: 'EOD 6291', url: 'https://docs.google.com/spreadsheets/d/1GpRy7O00jD6nxq9f59j_byrD7M9rCx7CIWuZMgjX5S8/edit', class: 'eod' },
+        { emoji: '📼', label: '6291 Tape Log', url: 'https://docs.google.com/spreadsheets/d/1k3F-M_i_b-G39Syo3SCXJA/edit', class: 'tape' },
+        { emoji: '📬', label: 'Mailbox Renewals', url: 'https://docs.google.com/spreadsheets/d/1kkMYtwV8z-IE97dcGQ-3v4nk1nSNvGpV/edit', class: 'mailbox' },
+        { emoji: '⏰', label: 'Clock-In/Out Exception', url: 'https://docs.google.com/spreadsheets/d/1F8PZYRCmoR-ZbA5M2B8b3c3RLqJYv-cOrQu3tPQapOQ/edit', class: 'clock' },
+        { emoji: '🏬', label: 'Store Inventory', url: 'https://docs.google.com/spreadsheets/d/1VYiUSyP9Ma4lmZj1cRonB5CHQopwSJ2mCw9U4K5NU00/edit', class: 'inventory' },
+        { emoji: '🖨️', label: 'Large Format Print Calculator', url: 'https://docs.google.com/spreadsheets/d/1fwBJT1ZzEamI3CAucVwkbXKXqzOkIgOu/edit', class: 'print' },
+        { emoji: '📝', label: 'Notary Error Log', url: 'https://docs.google.com/spreadsheets/d/1X30MU6fOC10LBUYj5hOCgLis5-VcpJ3REGsnmX-6U6E/edit', class: 'notary' },
+        { emoji: '🛠', label: 'Access Point Recovery Log', url: 'https://docs.google.com/spreadsheets/d/1_HpLN_e_zKBUcevGVpi_y5uyOPLI9UJbhN74O8PYUW4/edit', class: 'point' }
+      ]
+    };
+
+    const globalLinks = [
+      { emoji: '📠', label: 'Fax', url: 'https://www.faxbetter.com/application/Secure/Login.aspx', class: 'notary' },
+      { emoji: '🧾', label: 'Tariff Code 1', url: 'https://www.goglobalpost.com/hs-code-lookup-tool/', class: 'inventory' },
+      { emoji: '📚', label: 'Tariff Code 2', url: 'https://hts.usitc.gov/', class: 'eod' }
+    ];
+
+    function createLinkBox({ emoji, label, url, class: cls }) {
+      const div = document.createElement('div');
+      div.className = `link-box ${cls}`;
+      div.innerHTML = `<a href="${url}" target="_blank" rel="noopener noreferrer" title="${label}">${emoji} <span>${label}</span></a>`;
+      return div;
+    }
+
+    function renderLinks(storeKey) {
+      const container = document.getElementById('linksContainer');
+      container.innerHTML = '';
+
+      const links = storeLinks[storeKey] || storeLinks['6291'];
+      links.forEach(link => container.appendChild(createLinkBox(link)));
+
+      globalLinks.forEach(link => container.appendChild(createLinkBox(link)));
+
+      filterLinks();
+    }
+
+    function filterLinks() {
+      const input = document.getElementById('searchBar').value.toLowerCase();
+      document.querySelectorAll('.link-box').forEach(box => {
+        box.style.display = box.innerText.toLowerCase().includes(input) ? 'flex' : 'none';
+      });
+    }
+
+    function onStoreChange() {
+      const storeFilter = document.getElementById('storeFilter');
+      const storeValue = storeFilter.value;
+
+      localStorage.setItem('selectedStore', storeValue);
+
+      storeFilter.className = '';
+      if (storeValue === '3145') storeFilter.classList.add('store-3145');
+      else if (storeValue === '0476') storeFilter.classList.add('store-0476');
+      else storeFilter.classList.add('store-default');
+
+      renderLinks(storeValue);
+    }
+
+    function trackPackage() {
+      const trackingNumber = document.getElementById('trackingNumber').value.trim();
+      const carrier = document.getElementById('carrierSelect').value;
+
+      if (!trackingNumber) {
+        alert('Please enter a tracking number.');
+        return;
+      }
+
+      let url = '';
+      if (carrier === 'ups') {
+        url = `https://www.ups.com/track?loc=en_US&tracknum=${encodeURIComponent(trackingNumber)}`;
+      } else if (carrier === 'usps') {
+        url = `https://tools.usps.com/go/TrackConfirmAction?tLabels=${encodeURIComponent(trackingNumber)}`;
+      }
+
+      if (url) {
+        window.open(url, '_blank');
+      }
+    }
+
+    window.onload = () => {
+      const savedStore = localStorage.getItem('selectedStore');
+      const storeFilter = document.getElementById('storeFilter');
+      storeFilter.value = savedStore && storeLinks[savedStore] ? savedStore : '6291';
+      onStoreChange();
+    };
+  </script>
+
+</body>
+</html>
